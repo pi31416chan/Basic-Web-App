@@ -1,0 +1,17 @@
+/*!
+ * Bootstrap Docs (https://getbootstrap.com/)
+ * Copyright 2011-2021 The Bootstrap Authors
+ * Copyright 2011-2021 Twitter, Inc.
+ * Licensed under the Creative Commons Attribution 3.0 Unported License.
+ * For details, see https://creativecommons.org/licenses/by/3.0/.
+ */
+.bd-example {
+  width:500px;
+  position: relative;
+  /* align-self: center */
+  padding: 1rem;
+  margin: auto;
+  border: solid #dee2e6;
+  border-width: 1px;
+  border-radius: 5px;
+}
