@@ -65,6 +65,8 @@ class Token(dict):
     def _validate_expiry(self):
         _expiry = datetime.fromisoformat(self.expiry)
         _cur_time = datetime.utcnow()
+        # print(_expiry)
+        # print(_cur_time)
 
         return _cur_time > _expiry
 
@@ -123,7 +125,8 @@ class Token(dict):
                 # Check if the token is expired and user agent is correct
                 _is_user_agent_correct = self._validate_user_agent()
                 _is_expired = self._validate_expiry()
-                if not _is_user_agent_correct and _is_expired:
+                # print(_is_user_agent_correct,_is_expired)
+                if not _is_user_agent_correct or _is_expired:
                     # print('expired')
                     return False
                 else:
