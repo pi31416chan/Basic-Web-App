@@ -27,12 +27,3 @@ db.init_app(app)
 # Create the database tables if not found
 with app.app_context():
     db.create_all()
-
-
-
-
-
-
-
-
-
