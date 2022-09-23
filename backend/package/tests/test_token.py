@@ -4,16 +4,14 @@ import sys
 from flask import Flask
 from datetime import datetime as dt, timedelta
 from ..helper_func import (
-    Token,
-    generate_random_key,
-    generate_uuid_b64,
-    parse_auth_header
+    Token
 )
+from .base import BaseTest
 
 
 
 # Test Case
-class TestToken(unittest.TestCase):
+class TestToken(BaseTest):
 
     def setUp(self):
         self.app = Flask(__name__)
@@ -100,8 +98,3 @@ class TestToken(unittest.TestCase):
             "eyJ1c2VyX2FnZW50IjogIlRlc3QgVXNlciBBZ2VudCIsICJleHBpcnkiOiA"+
             "iMjAyMi0wOS0yMlQxNjoyODo1NS45MDM4ODEiLCAic2lnbmF0dXJlIjogIm"+
             "tyZ2hmbmRzaGR3cFMxQkxyNXA4RnVyWVJwUkpNdy8zVyt0R0U3U1Y3cGM9In0=")
-
-
-
-if __name__ == '__main__':
-    unittest.main()

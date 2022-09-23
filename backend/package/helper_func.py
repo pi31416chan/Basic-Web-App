@@ -140,7 +140,6 @@ class Token(dict):
 
     def string(self):
         return b64encode(json.dumps(self).encode('utf-8')).decode('utf-8')
-        # return json.dumps(self)
 
 
 
@@ -196,4 +195,4 @@ def parse_auth_header(string:str) -> str:
     if string.startswith('API_KEY '):
         return string.replace('API_KEY ','')
     else:
-        raise ValueError("Invalid authorization token")
+        raise ValueError("Invalid api key")
