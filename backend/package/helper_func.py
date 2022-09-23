@@ -72,6 +72,8 @@ class Token(dict):
 
     def _validate_user_agent(self):
         _user_agent = request.user_agent.string
+        # print(self.user_agent)
+        # print(_user_agent)
 
         return self.user_agent == _user_agent
 

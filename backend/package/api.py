@@ -189,11 +189,15 @@ class ValidateToken(Resource):
     @required_api_auth
     def get(self):
         if request.cookies.get('token'):
+            # print('validating token')
             token = Token(request.cookies['token'])
+            if token.validate(): print('token is valid')
+            else: print('token is invalid')
             return {
                 "is_token_valid":token.validate()
             },200
         else:
+            print('token is invalid')
             return {
                 "is_token_valid":False
             },200

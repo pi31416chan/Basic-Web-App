@@ -23,6 +23,7 @@ def required_login(func):
 
     def decorated(*args,**kwargs):
         headers = {
+            "User-Agent":request.headers.get('User-Agent'),
             "Authorization":auth_header(current_app.config.get('API_KEY'))
         }
         response = requests.get(api_validatetoken,
@@ -87,15 +88,17 @@ def register():
         password = register_form.password.data
 
         # Create user
+        headers = {
+            "User-Agent":request.headers.get('User-Agent'),
+            "Authorization":auth_header(current_app.config['API_KEY'])
+        }
         payload = {
             "username":str(username),
             "email":str(email),
             "password": str(password)
         }
         response = requests.post(api_registeruser,
-                                 headers=auth_header(
-                                    current_app.config.get('API_KEY')
-                                ),
+                                 headers=headers,
                                  json=payload)
         r_content = response.json()
 
