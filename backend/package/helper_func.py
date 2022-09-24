@@ -19,8 +19,8 @@ from secrets import token_hex,token_bytes
 # Class Definition
 class Token(dict):
     '''
-    Pass in a token dictionary to instantiate a token object or generate
-    it from scratch.
+    Pass in a token dictionary or base64 encoded token string to instantiate
+    a token object or generate it from scratch.
 
     If a token dictionary is passed in as argument, this is the
     expected format:
@@ -179,7 +179,6 @@ def generate_random_key(type:str='hex',nbytes:int=32) -> str:
         return token_bytes(nbytes)
     else:
         raise ValueError("Only 'hex' or 'bytes' are supported as argument")
-        
 
 def parse_auth_header(string:str) -> str:
     '''
@@ -197,4 +196,5 @@ def parse_auth_header(string:str) -> str:
     if string.startswith('API_KEY '):
         return string.replace('API_KEY ','')
     else:
-        raise ValueError("Invalid api key")
+        # Wrong format provided
+        return ""
