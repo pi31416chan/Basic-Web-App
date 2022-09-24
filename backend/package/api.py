@@ -20,8 +20,7 @@ from .helper_func import (
 from .db import (
     APIKey,
     db,
-    User,
-    APIKey
+    User
 )
 
 
@@ -45,15 +44,22 @@ def required_api_auth(func):
                 if api_instance.active:
                     return func(self,*args,**kwargs)
                 else:
-                    return {"message":"Api key is invalid"},401
+                    return (
+                        {"message":"Api key is invalid"},
+                        401
+                    )
                 
             else:
-                return {"message":"Api key is invalid"},401
+                return (
+                    {"message":"Api key is invalid"},
+                    401
+                )
             
         else:
-            return {
-                "message":"Authorised api key is required for this request"
-            },401
+            return (
+                {"message":"Authorized api key is required for this request"},
+                401
+            )
 
     return decorated
 
@@ -75,11 +81,15 @@ def required_admin_api_auth(func):
             if key_correct and is_active:
                     return func(self,*args,**kwargs)
             else:
-                return {"message":"Api key is invalid"},401
+                return (
+                    {"message":"Api key is invalid"},
+                    401
+                )
         else:
-            return {
-                "message":"Authorised api key is required for this request"
-            },401
+            return (
+                {"message":"Authorized api key is required for this request"},
+                401
+            )
 
     return decorated
 
@@ -92,44 +102,114 @@ api = Api()
 
 # Api Class Definition
 class CheckPassword(Resource):
+    '''
+    Check if the passed in credentials are correct.
+
+    Expected JSON Data Format:
+    ----------
+    header = {
+        "User-Agent":"XXXXX",
+        "Authorization":"API_KEY XXXXXXXXXXXXXXXXXXXXXX"
+    }
+    data = {
+        "username":"XXXXX",
+        "password":"XXXXXXXXXXXXXXXXXXXXXX"
+    }
+
+    Returns:
+    -----------
+    If credentials correct:
+        status_code = 200
+        data = {
+            'is_pw_correct': True,
+            'message': 'Username and password correct',
+            'token': 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'}
+    Else:
+        status_code = 601
+        data = {"message": "Username or password is invalid"}
+    '''
     @required_api_auth
     def post(self):
         data = request.get_json()
 
-        # Check username & email existence
+        # Check username existence
         user = User.query.filter_by(username=data.get('username')).first()
         if user:
             is_pw_correct = check_password_hash(user.password_hash,
                                                 data.get('password'))
             if is_pw_correct:
-                # Create token with one day validity 
+                # Create token 
                 token = Token(
                     user_agent=request.headers.get('User-Agent'),
-                    expiry=current_app.config['TOKEN_EXPIRY']
+                    expiry=current_app.config['TOKEN_EXPIRY'],
                 )
-                return {
-                    "is_pw_correct":is_pw_correct,
-                    "message":"Username and password correct",
-                    "token": token.string()
-                },200
+                return (
+                    {
+                        "is_pw_correct":is_pw_correct,
+                        "message":"Username and password correct",
+                        "token": token.string()
+                    },
+                    200)
             else:
-                return {"message":"Username or password is invalid"},601
+                return (
+                    {"message":"Username or password is invalid"},
+                    "601 INVALID CREDENTIALS"
+                )
         else:
-            return {
-                "message":"Username or password is invalid"},601
+            return (
+                    {"message":"Username or password is invalid"},
+                    "601 INVALID CREDENTIALS"
+                )
 
 class RegisterUser(Resource):
+    '''
+    Register a new user to the database.
+
+    Expected JSON Data Format:
+    ----------
+    header = {
+        "User-Agent":"XXXXX",
+        "Authorization":"API_KEY XXXXXXXXXXXXXXXXXXXXXX"
+    }
+    data = {
+        "username":"XXXXX",
+        "email": "XXXXX@XXXmail.com"
+        "password":"XXXXXXXXXXXXXXXXXXXXXX"
+    }
+
+    Returns:
+    -----------
+    If credentials correct:
+        status_code = 201
+        data = {data = {"message": "Successfully created user 'XXXXX'"}
+    Else if username exists:
+        status_code = 602
+        data = {"message": "Username is already used"}
+    Else if email exists:
+        status_code = 602
+        data = {"message": "Email is already registered"}
+    '''
     @required_api_auth
     def post(self):
         data = request.get_json()
 
         # Check username & email existence
-        username_exist = User.query.filter_by(username=data.get('username')).first()
-        email_exist = User.query.filter_by(email=data.get('email')).first()
+        username_exist = User.query.filter_by(
+            username=data.get('username')
+        ).first()
+        email_exist = User.query.filter_by(
+            email=data.get('email')
+        ).first()
         if username_exist:
-            return {"message":"Username is already used"},602
+            return (
+                {"message":"Username is already used"},
+                "602 UNSUCCESSFUL REGISTRATION"
+            )
         elif email_exist:
-            return {"message":"Email is already registered"},602
+            return (
+                {"message":"Email is already registered"},
+                "602 UNSUCCESSFUL REGISTRATION"
+            )
         else:
             user = User(username=data.get('username'),
                         email=data.get('email'),
@@ -138,26 +218,40 @@ class RegisterUser(Resource):
                             salt_length=16))
             db.session.add(user)
             db.session.commit()
-            return {
-                "message":
-                f"Successfully created user '{user.username}'."
-            },201
+            return (
+                {
+                    "message":
+                    f"Successfully created user '{user.username}'"
+                },
+                201
+            )
 
 class GenerateAPIKey(Resource):
     '''
-    This API can generate API Key without authentication and write to the
-    relevant database.
+    This API can generate API Key and write to the relevant database.
     
     This is only allowed for learning purposes, we should avoid doing this 
     in actual case and try to exclude the generation of API Key out of the 
     application itself.
 
-    Expected Data:
+    Note: Admin API key required for this request.
+
+    Expected JSON Data Format:
+    ----------
     {
         "device_name": <device_name>
     }
 
     <device_name>: str (less than 50 characters)
+
+    Returns:
+    ----------
+    If device name exists:
+        status_code = 603
+        data = {"message":"Device name is already used"}
+    Else:
+        status_code = 200
+        data = {"api_key": "XXXXXXXXXXXXXXXXXXXXXX"}
     '''
     @required_admin_api_auth
     def post(self):
@@ -168,7 +262,10 @@ class GenerateAPIKey(Resource):
                            device_name=data.get('device_name')).first()
 
         if device_exist:
-            return {"message":"Device name is already used"},603
+            return (
+                {"message":"Device name is already used"},
+                "603 UNSUCCESSFUL KEYGEN"
+            )
         else:
             # Avoid api key collision
             key_exist = True
@@ -183,34 +280,64 @@ class GenerateAPIKey(Resource):
                                       device_name=data.get('device_name'))
                 db.session.add(api_instance)
                 db.session.commit()
-                return {"api_key":api_key},200
+                return (
+                    {"api_key":api_key},
+                    200
+                )
 
 class ValidateToken(Resource):
+    '''
+    Validate the access token stored in the request's cookies.
+
+    Returns:
+    ----------
+    status_code = 200
+    data = {"is_token_valid": `Bool`}
+    '''
     @required_api_auth
     def get(self):
         if request.cookies.get('token'):
             # print('validating token')
             token = Token(request.cookies['token'])
-            if token.validate(): print('token is valid')
-            else: print('token is invalid')
-            return {
-                "is_token_valid":token.validate()
-            },200
+            # if token.validate(): print('token is valid')
+            # else: print('token is invalid')
+            return (
+                {"is_token_valid":token.validate()},
+                200
+            )
         else:
-            print('token is invalid')
-            return {
-                "is_token_valid":False
-            },200
+            # print('token is invalid')
+            return (
+                {"is_token_valid":False},
+                200
+            )
 
-class TestApiAuth(Resource):
-    def get(self):
-        token = Token(user_agent=request.user_agent.string)
-        return {"test":"success",
-        "token":token.string()},200
-
+class _TestApiAuth(Resource):
+    '''
+    For unit test purpose.
+    Not for whatsoever production usage.
+    '''
     @required_api_auth
+    def get(self):
+        return ({"message":"API successfully authorized"},200)
+
+    @required_admin_api_auth
     def post(self):
-        return {"test":"success"},200
+        return ({"message":"Admin API successfully authorized"},200)
+
+class _TestPlayGround(Resource):
+    '''
+    Playground API
+    Not for whatsoever production usage.
+    This API is solely for testing only.
+    '''
+    @required_api_auth
+    def get(self):
+        return ({"message":"success"},200)
+
+    @required_admin_api_auth
+    def post(self):
+        return ({"message":"success"},200)
 
 
 
@@ -218,5 +345,6 @@ class TestApiAuth(Resource):
 api.add_resource(CheckPassword,'/checkpassword')
 api.add_resource(RegisterUser,'/registeruser')
 api.add_resource(GenerateAPIKey,'/generateapikey')
-api.add_resource(TestApiAuth,'/testapiauth')
 api.add_resource(ValidateToken,'/validatetoken')
+api.add_resource(_TestPlayGround,'/testplayground')
+api.add_resource(_TestApiAuth,'/testapiauth')

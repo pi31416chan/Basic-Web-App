@@ -112,7 +112,7 @@ class Test_AuthParserWrongInput(BaseTest):
         self.key = "LAPSAP Jeml7ib-TwqinbDaV_GtlQ"
 
     def test_WrongInput(self):
-        self.assertRaises(ValueError,lambda:parse_auth_header(self.key))
+        self.assertEqual(parse_auth_header(self.key),"")
 
 authparser_cases = [
     Test_AuthParserValidInput,Test_AuthParserWrongInput
