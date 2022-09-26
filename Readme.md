@@ -1,4 +1,4 @@
-# Basic Web Application
+# Web Application Frame
 This is a project to implement Web application covering database to backend to \
 frontend.
 
