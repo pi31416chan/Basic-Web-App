@@ -1,13 +1,16 @@
 # Basic Web Application
-This is a project to implement Web application covering database to backend to\
+This is a project to implement Web application covering database to backend to \
 frontend.
 
-Currently this web application does not have a clear "content" because it can be\
-anything, once the user logs in, he/she can access all the web applications\
+Currently this web application does not have a clear "content" because it can \
+be anything, once the user logs in, he/she can access all the web applications \
 contained from within.
 
 The architecture is as follow:\
 **Browser -> Frontend -> Backend -> Database**
+
+The frontend and backend are completely separated as if they are entirely two \
+separate applications communicating only with REST API.
 
 Features:
 1. User login system
