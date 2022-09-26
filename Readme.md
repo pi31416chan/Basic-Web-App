@@ -1,5 +1,5 @@
-# User Management System
-This is a project to implement a user management system.
+# Basic Web Application
+This is a project to implement Web application covering database to backend to frontend.
 
 The architecture is as follow:\
 **Browser -> Frontend -> Backend -> Database**
