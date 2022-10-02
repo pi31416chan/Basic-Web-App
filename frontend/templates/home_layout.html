@@ -27,8 +27,15 @@
             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
-        <div class="">
-            <a class="nav-logout" href="/logout">Logout</a>
+        <div>
+            <button class="profile-btn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{{url_for('static',filename='blank_profile.jpg')}}" class="ms-2 rounded-circle" alt="Profile Picture">
+            </button>
+            <ul class="dropdown-menu profile-dropdown-menu start-50 end-0" aria-labelledby="dropdownMenuButton1">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Change Password</a></li>
+                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
         </div>
     </div>
 </nav>

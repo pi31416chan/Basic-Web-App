@@ -24,8 +24,8 @@
 	border-radius: 5px;
 }
 .container-searchbar {
-    padding-right: var(--bs-gutter-x,.75rem);
-    padding-left: var(--bs-gutter-x,.75rem);
+    padding-right: var(--bs-gutter-x,.5rem);
+    padding-left: var(--bs-gutter-x,.5rem);
 }
 .nav-logout {
     padding:0 0 0 .75rem;
@@ -37,4 +37,11 @@
     justify-content: space-between;
     align-items: center;
     align-content: center;
+}
+.profile-btn{
+    background-color:transparent;
+    border:1px solid transparent;
+}
+.profile-dropdown-menu[data-bs-popper]{
+	margin-top:.5rem
 }
