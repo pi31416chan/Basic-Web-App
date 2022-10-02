@@ -119,4 +119,4 @@ def register():
 
 @required_login
 def home():
-    return '<h1>Home Page</h1>'
+    return render_template('home.html')

@@ -5,13 +5,36 @@
  * Licensed under the Creative Commons Attribution 3.0 Unported License.
  * For details, see https://creativecommons.org/licenses/by/3.0/.
  */
+.bd-border {
+	width:500px;
+	padding: 1rem;
+	margin: auto;
+	border: solid #dee2e6;
+	border-width: 1px;
+	border-radius: 5px;
+}
 .bd-example {
-  width:500px;
-  position: relative;
-  /* align-self: center */
-  padding: 1rem;
-  margin: auto;
-  border: solid #dee2e6;
-  border-width: 1px;
-  border-radius: 5px;
+	width:500px;
+	position: relative;
+	/* align-self: center */
+	padding: 1rem;
+	margin: auto;
+	border: solid #dee2e6;
+	border-width: 1px;
+	border-radius: 5px;
+}
+.container-searchbar {
+    padding-right: var(--bs-gutter-x,.75rem);
+    padding-left: var(--bs-gutter-x,.75rem);
+}
+.nav-logout {
+    padding:0 0 0 .75rem;
+    color:Tomato;
+    text-decoration:none;
+}
+.d-flex-center {
+    display: flex!important;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
 }
