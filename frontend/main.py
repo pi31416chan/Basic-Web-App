@@ -8,6 +8,7 @@ from flask_session import Session
 from modules import (
     login,
     register,
+    logout,
     home
 )
 
@@ -29,6 +30,8 @@ Session(app)
 
 
 # Routing
-app.add_url_rule('/',view_func=login,methods=['GET','POST'])
+app.add_url_rule('/login',view_func=login,methods=['GET','POST'])
+app.add_url_rule('/logout',view_func=logout,methods=['GET'])
 app.add_url_rule('/register',view_func=register,methods=['GET','POST'])
+app.add_url_rule('/','home',view_func=home)
 app.add_url_rule('/home','home',view_func=home)

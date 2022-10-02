@@ -117,6 +117,10 @@ def register():
         form=register_form,
         login_url=url_for('login'))
 
+def logout():
+    del session['token']
+    return redirect(url_for('login'))
+
 @required_login
 def home():
     return render_template('home.html')
