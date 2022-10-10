@@ -165,7 +165,7 @@ def generate_random_key(type:str='hex',nbytes:int=32) -> str:
     type: str, Default = 'hex'
         The type of the output key.
             'hex': generate a hexadecimal string
-            'bytes': generate a hexadecimal string
+            'bytes': generate a byte string
     nbytes: int, Default = 32
         The byte size of the output key (32 bytes = 256 bits).
 
