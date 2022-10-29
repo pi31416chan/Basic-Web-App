@@ -66,6 +66,7 @@ def login():
 
         # Correct username and password
         if response.status_code == 200:
+            session['username'] = username
             session['token'] = r_content['token']
             return redirect(url_for('home'))
         
@@ -118,6 +119,7 @@ def register():
         login_url=url_for('login'))
 
 def logout():
+    del session['username']
     del session['token']
     return redirect(url_for('login'))
 

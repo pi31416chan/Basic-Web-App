@@ -161,6 +161,76 @@ class CheckPassword(Resource):
                     "601 INVALID CREDENTIALS"
                 )
 
+class ChangePassword(Resource):
+    '''
+    Change the password.
+
+    Expected JSON Data Format:
+    ----------
+    header = {
+        "User-Agent":"XXXXX",
+        "Authorization":"API_KEY XXXXXXXXXXXXXXXXXXXXXX"
+    }
+    data = {
+        "username":"XXXXX",
+        "current_password":"XXXXXXXXXXXXXXXXXXXXXX",
+        "new_password":"XXXXXXXXXXXXXXXXXXXXXX",
+        "confirm_password":"XXXXXXXXXXXXXXXXXXXXXX"
+    }
+
+    Returns:
+    -----------
+    If password changed successfully:
+        status_code = 201
+        data = {"message": "Successfully changed password for user 'XXXXX'"}
+    Else if username does not exist:
+        status_code = 604
+        data = {"message": "Failed to change password"}
+    Else if password is invalid:
+        status_code = 604
+        data = {"message": "Failed to change password"}
+    Else if new password != confirm password:
+        status_code = 604
+        data = {"message": "Confirm password does not match the new password"}
+    '''
+    @required_api_auth
+    def post(self):
+        data = request.get_json()
+
+        # Check username existence
+        user = User.query.filter_by(username=data.get('username')).first()
+        if user:
+            is_pw_correct = check_password_hash(user.password_hash,
+                                                data.get('current_password'))
+            if is_pw_correct:
+                # Check if new password == confirm password
+                if data.get('new_password') == data.get('confirm_password'):
+                    user.password_hash = generate_password_hash(
+                        data.get('new_password'),
+                        salt_length=16
+                    )
+                    db.session.commit()
+
+                    return (
+                        {"message": f"Successfully changed password for user '{user.username}'"},
+                        200
+                    )
+                else:
+                    return (
+                        {"message": "Confirm password does not match the new password"},
+                        "604 FAILED CHANGING PASSWORD"
+                    )
+            else:
+                return (
+                    {"message":"Failed to change password"},
+                    "604 FAILED CHANGING PASSWORD"
+                )
+        else:
+            return (
+                    {"message":"Failed to change password"},
+                    "604 FAILED CHANGING PASSWORD"
+                )
+
 class RegisterUser(Resource):
     '''
     Register a new user to the database.
@@ -173,7 +243,7 @@ class RegisterUser(Resource):
     }
     data = {
         "username":"XXXXX",
-        "email": "XXXXX@XXXmail.com"
+        "email": "XXXXX@XXXmail.com",
         "password":"XXXXXXXXXXXXXXXXXXXXXX"
     }
 
@@ -181,7 +251,7 @@ class RegisterUser(Resource):
     -----------
     If credentials correct:
         status_code = 201
-        data = {data = {"message": "Successfully created user 'XXXXX'"}
+        data = {"message": "Successfully created user 'XXXXX'"}
     Else if username exists:
         status_code = 602
         data = {"message": "Username is already used"}
@@ -343,6 +413,7 @@ class _TestPlayGround(Resource):
 
 # Routing
 api.add_resource(CheckPassword,'/checkpassword')
+api.add_resource(ChangePassword,'/changepassword')
 api.add_resource(RegisterUser,'/registeruser')
 api.add_resource(GenerateAPIKey,'/generateapikey')
 api.add_resource(ValidateToken,'/validatetoken')
