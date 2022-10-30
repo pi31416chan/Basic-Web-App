@@ -11,7 +11,8 @@ from flask import (
 )
 from .forms import (
     LoginForm,
-    RegisterForm
+    RegisterForm,
+    ChangePasswordForm
 )
 from .api import *
 from .helper_func import auth_header
@@ -65,7 +66,7 @@ def login():
         r_content = response.json()
 
         # Correct username and password
-        if response.status_code == 200:
+        if response.status_code == 201:
             session['username'] = username
             session['token'] = r_content['token']
             return redirect(url_for('home'))
@@ -126,3 +127,42 @@ def logout():
 @required_login
 def home():
     return render_template('home.html')
+
+@required_login
+def change_password():
+    change_password_form = ChangePasswordForm()
+    if request.method == 'POST' and change_password_form.validate():
+        cur_password = change_password_form.cut_password.data
+        new_password = change_password_form.new_password.data
+        cfm_password = change_password_form.cfm_password.data
+
+        # Change Password
+        headers = {
+            "User-Agent":request.headers.get('User-Agent'),
+            "Authorization":auth_header(current_app.config['API_KEY'])
+        }
+        payload = {
+            "username":str(session['username']),
+            "current_password":str(cur_password),
+            "new_password": str(new_password),
+            "confirm_password": str(cfm_password)
+        }
+        response = requests.post(api_changepassword,
+                                 headers=headers,
+                                 json=payload)
+        r_content = response.json()
+
+        # Change password successfully
+        if response.status_code == 201:
+            flash(r_content['message'],'message')
+            # sleep(3)
+            return redirect(url_for('logout'))
+
+        # 604 = Change password failed
+        elif response.status_code == 604:
+            flash(r_content['message'],'error')
+            return redirect(url_for('change_password'))
+
+    return render_template(
+        'change_password.html',
+        form=change_password_form,)

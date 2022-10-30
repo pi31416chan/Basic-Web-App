@@ -3,5 +3,6 @@ from .routes import (
     login,
     register,
     logout,
-    home
+    home,
+    change_password
 )

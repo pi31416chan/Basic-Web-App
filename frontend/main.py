@@ -9,7 +9,8 @@ from modules import (
     login,
     register,
     logout,
-    home
+    home,
+    change_password
 )
 
 
@@ -35,3 +36,4 @@ app.add_url_rule('/logout',view_func=logout,methods=['GET'])
 app.add_url_rule('/register',view_func=register,methods=['GET','POST'])
 app.add_url_rule('/','home',view_func=home)
 app.add_url_rule('/home','home',view_func=home)
+app.add_url_rule('/change_password','change_password',view_func=change_password,methods=['GET','POST'])

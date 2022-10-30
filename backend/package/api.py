@@ -149,7 +149,7 @@ class CheckPassword(Resource):
                         "message":"Username and password correct",
                         "token": token.string()
                     },
-                    200)
+                    201)
             else:
                 return (
                     {"message":"Username or password is invalid"},
@@ -213,7 +213,7 @@ class ChangePassword(Resource):
 
                     return (
                         {"message": f"Successfully changed password for user '{user.username}'"},
-                        200
+                        201
                     )
                 else:
                     return (

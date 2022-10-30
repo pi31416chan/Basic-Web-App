@@ -79,3 +79,37 @@ class RegisterForm(FlaskForm):
         ]
     )
     submit = SubmitField('Submit')
+
+class ChangePasswordForm(FlaskForm):
+    cut_password = PasswordField(
+        'Current Password',
+        validators=[
+            DataRequired(),
+            Length(
+                min=6,
+                message="Password must be at least 6 characters long"
+            )
+        ]
+    )
+    new_password = PasswordField(
+        'New Password',
+        validators=[
+            DataRequired(),
+            Length(
+                min=6,
+                message="Password must be at least 6 characters long"
+            )
+        ]
+    )
+    cfm_password = PasswordField(
+        'Confirm Password',
+        validators=[
+            DataRequired(),
+            EqualTo('new_password','Input does not match with password'),
+            Length(
+                min=6,
+                message="Password must be at least 6 characters long"
+            )
+        ]
+    )
+    submit = SubmitField('Submit')
