@@ -238,7 +238,7 @@ class Test_CheckPasswordCorrect(APIBaseTest):
         )
 
     def test_Status(self):
-        self.assertEqual(self.resp.status_code,200)
+        self.assertEqual(self.resp.status_code,201)
 
     def test_IsPasswordCorrect(self):
         self.assertTrue(self.resp.json['is_pw_correct'])
@@ -332,6 +332,165 @@ apicheckpassword_cases = [
 suite_apicheckpassword = make_suite(
     apicheckpassword_cases,
     "Testing for /checkpassword API"
+)
+
+
+
+'''
+Testing for /changepassword API
+'''
+class Test_ChangePasswordCorrect(APIBaseTest):
+    def setUp(self):
+        self.header = {
+            "User-Agent":"Test User Agent",
+            "Authorization":"API_KEY TJhf6diDRxCDVBLKZi3sTA"
+        }
+        self.user_payload = {
+            "username":"test456",
+            "email":"test456@testmail.com",
+            "password":"123456789!@#$%^&*abcdefg",
+        }
+        self.payload = {
+            "username":"test456",
+            "current_password":"123456789!@#$%^&*abcdefg",
+            "new_password":"987654321*&^%$#@!gfedcba",
+            "confirm_password":"987654321*&^%$#@!gfedcba",
+        }
+        self._clear_n_create_db(self.user_payload)
+        self.resp = client.post(
+            '/changepassword',
+            headers=self.header,
+            json=self.payload
+        )
+
+    def test_Status(self):
+        self.assertEqual(self.resp.status_code,201)
+
+    def test_Message(self):
+        self.assertEqual(
+            self.resp.json['message'],
+            f"Successfully changed password for user '{self.user_payload['username']}'"
+        )
+
+    def tearDown(self):
+        self._clear_user_from_db(self.user_payload['username'])
+
+class Test_ChangePasswordUserNotExist(APIBaseTest):
+    def setUp(self):
+        self.header = {
+            "User-Agent":"Test User Agent",
+            "Authorization":"API_KEY TJhf6diDRxCDVBLKZi3sTA"
+        }
+        self.user_payload = {
+            "username":"test456",
+            "email":"test456@testmail.com",
+            "password":"123456789!@#$%^&*abcdefg",
+        }
+        self.payload = {
+            "username":"test456?",
+            "current_password":"123456789!@#$%^&*abcdefg",
+            "new_password":"987654321*&^%$#@!gfedcba",
+            "confirm_password":"987654321*&^%$#@!gfedcba",
+        }
+        self._clear_n_create_db(self.user_payload)
+        self.resp = client.post(
+            '/changepassword',
+            headers=self.header,
+            json=self.payload
+        )
+
+    def test_Status(self):
+        self.assertEqual(self.resp.status_code,604)
+
+    def test_Message(self):
+        self.assertEqual(
+            self.resp.json['message'],
+            "Failed to change password"
+        )
+
+    def tearDown(self):
+        self._clear_user_from_db(self.user_payload['username'])
+
+class Test_ChangePasswordWrong(APIBaseTest):
+    def setUp(self):
+        self.header = {
+            "User-Agent":"Test User Agent",
+            "Authorization":"API_KEY TJhf6diDRxCDVBLKZi3sTA"
+        }
+        self.user_payload = {
+            "username":"test456",
+            "email":"test456@testmail.com",
+            "password":"123456789!@#$%^&*abcdefg",
+        }
+        self.payload = {
+            "username":"test456",
+            "current_password":"123456789!@#$%^&*abcdefg?",
+            "new_password":"987654321*&^%$#@!gfedcba",
+            "confirm_password":"987654321*&^%$#@!gfedcba",
+        }
+        self._clear_n_create_db(self.user_payload)
+        self.resp = client.post(
+            '/changepassword',
+            headers=self.header,
+            json=self.payload
+        )
+
+    def test_Status(self):
+        self.assertEqual(self.resp.status_code,604)
+
+    def test_Message(self):
+        self.assertEqual(
+            self.resp.json['message'],
+            "Failed to change password"
+        )
+
+    def tearDown(self):
+        self._clear_user_from_db(self.user_payload['username'])
+
+class Test_ChangePasswordUnmatched(APIBaseTest):
+    def setUp(self):
+        self.header = {
+            "User-Agent":"Test User Agent",
+            "Authorization":"API_KEY TJhf6diDRxCDVBLKZi3sTA"
+        }
+        self.user_payload = {
+            "username":"test456",
+            "email":"test456@testmail.com",
+            "password":"123456789!@#$%^&*abcdefg",
+        }
+        self.payload = {
+            "username":"test456",
+            "current_password":"123456789!@#$%^&*abcdefg",
+            "new_password":"987654321*&^%$#@!gfedcba",
+            "confirm_password":"randomunmatchedpassword",
+        }
+        self._clear_n_create_db(self.user_payload)
+        self.resp = client.post(
+            '/changepassword',
+            headers=self.header,
+            json=self.payload
+        )
+
+    def test_Status(self):
+        self.assertEqual(self.resp.status_code,604)
+
+    def test_Message(self):
+        self.assertEqual(
+            self.resp.json['message'],
+            "Confirm password does not match the new password"
+        )
+
+    def tearDown(self):
+        self._clear_user_from_db(self.user_payload['username'])
+
+apichangepassword_cases = [
+    Test_ChangePasswordCorrect,Test_ChangePasswordUserNotExist,
+    Test_ChangePasswordWrong,Test_ChangePasswordUnmatched
+
+]
+suite_apichangepassword = make_suite(
+    apichangepassword_cases,
+    "Testing for /changepassword API"
 )
 
 

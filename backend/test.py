@@ -17,6 +17,7 @@ from package.tests.test_api import (
     suite_apikeygen,
     suite_apiregisteruser,
     suite_apicheckpassword,
+    suite_apichangepassword,
     suite_apivalidatetoken,
     suite_apitestapiauth,
     suite_apiadmintestapiauth
@@ -63,6 +64,7 @@ suites_to_run = [
     suite_apikeygen,
     suite_apiregisteruser,
     suite_apicheckpassword,
+    suite_apichangepassword,
     suite_apivalidatetoken,
     suite_apitestapiauth,
     suite_apiadmintestapiauth
