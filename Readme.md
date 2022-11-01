@@ -13,18 +13,20 @@ The frontend and backend are completely separated as if they are entirely two \
 separate applications communicating only with REST API.
 
 Features:
-1. User login system
-2. User register system
-3. Logged-in only protected route
-4. Expirable acccess Token (cryptographically protected) for browser session
+1. User login
+2. Changing password
+3. Registering user
+4. Logged-in only protected route
+5. Expirable acccess Token (cryptographically protected) for browser session
 
 Security Measures:
-1. Token are generated with SHA256 algorithm and only will be validated from \
+1. Tokens are generated with SHA256 algorithm and only will be validated from \
 backend server and are not stored in database, the hash is used for \
 verification instead.
 2. Salted user passwords are hashed and stored in the database (passwords are \
 not writen to any storage in the entire chain)
-3. API Key to restrict only the frontend server can request through REST API
+3. API Key to restrict only the authorised party (e.g. frontend server) can \
+request through REST API
 
 With the security measures implemented as above, this should make\
 this system robust for majority of the use case against session thief,\
